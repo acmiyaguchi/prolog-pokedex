@@ -6,5 +6,4 @@ services:
       - "8080:8080"
     volumes:
       - ./:/app
-    user: root
-    command: swipl /app/start.pl --no-fork
+    command: swipl /app/start.pl
