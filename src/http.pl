@@ -36,6 +36,7 @@ home_page(_Request) :-
             h1(PageTitle),
             p(['This page serves up facts about pokemon using ',
                 a([href='https://pokeapi.co'], 'PokeAPI'), '.']),
+            p(['There are ', Data.get(count), ' pokemon available.']),
             table([border(1), align(center), width('80%')], [
                 thead(tr([th(name)])),
                 tbody([\table_row(Results)])
