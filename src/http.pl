@@ -44,12 +44,7 @@ home_page(_Request) :-
         ]
     ).
 
-:- http_handler(
-    root(.),
-    http_redirect(moved, location_by_id(home_page)),
-    []
-).
-:- http_handler(root(home), home_page, []).
+:- http_handler(root(.), home_page, []).
 
 run(Port, Dir) :-
     % first load then server on port 8080
