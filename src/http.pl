@@ -3,13 +3,14 @@
 % https://stackoverflow.com/questions/36966024/running-prolog-on-a-server-from-php-or-make-it-daemon
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_client)).
+:- use_module(library(http/http_parameters)).
 :- use_module(reload).
 
-list_pokemon(Data) :- list_pokemon(Data, 20).
-list_pokemon(Data, Limit) :-
+list_pokemon(Data) :- list_pokemon(Data, 20, 0).
+list_pokemon(Data, Limit, Offset) :-
     % https://www.swi-prolog.org/pldoc/doc/_SWI_/library/http/http_client.pl
     BaseUrl = 'https://pokeapi.co/api/v2/',
-    format(atom(Url), '~a/~a?limit=~d', [BaseUrl, 'pokemon', Limit]),
+    format(atom(Url), '~a/~a?limit=~d&offset=~d', [BaseUrl, 'pokemon', Limit, Offset]),
     writeln(user_output, Url),
     http_get(Url, Data, [json_object(dict)]),
     writeln(user_output, Data).
@@ -26,20 +27,33 @@ table_row([Row|Rest]) -->
     ]),
     table_row(Rest).
 
-home_page(_Request) :-
-    list_pokemon(Data),
+home_page(Request) :-
+    http_parameters(Request, [
+        offset(Offset, [optional(true), integer, default(0)])
+    ]),
+    Limit = 20,
+    list_pokemon(Data, Limit, Limit*Offset),
     Results = Data.get(results),
+    Count = Data.get(count),
+    Pages is ceiling(Count / Limit),
+    CurrentPage is Offset + 1,
     PageTitle = 'Pokedex served with Prolog',
+
     reply_html_page(
         title(PageTitle),
         [
             h1(PageTitle),
             p(['This page serves up facts about pokemon using ',
                 a([href='https://pokeapi.co'], 'PokeAPI'), '.']),
-            p(['There are ', Data.get(count), ' pokemon available.']),
-            table([border(1), align(center), width('80%')], [
-                thead(tr([th(name)])),
-                tbody([\table_row(Results)])
+            p(['There are ', Count+1, ' pokemon available.']),
+            div([
+                span([
+                    "page ", CurrentPage, " of ", Pages
+                ]),
+                table([border(1), width('100%')], [
+                    thead(tr([th(name)])),
+                    tbody([\table_row(Results)])
+                ])
             ])
         ]
     ).
