@@ -1,7 +1,7 @@
 terraform {
   backend "gcs" {
     bucket = "acmiyaguchi-terraform"
-    prefix = "prolog-pokemon"
+    prefix = "prolog-pokedex"
   }
 }
 
@@ -27,7 +27,7 @@ resource "google_container_registry" "registry" {
 // https://cloud.google.com/build/docs/securing-builds/store-manage-build-logs
 resource "google_cloudbuild_trigger" "deploy-cloud-run" {
   github {
-    name  = "prolog-pokemon"
+    name  = "prolog-pokedex"
     owner = "acmiyaguchi"
     push {
       branch       = "^main$"
