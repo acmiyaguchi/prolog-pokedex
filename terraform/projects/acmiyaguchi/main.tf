@@ -6,8 +6,8 @@ terraform {
 }
 
 locals {
-  project_id        = "acmiyaguchi"
-  region            = "us-central1"
+  project_id = "acmiyaguchi"
+  region     = "us-central1"
 }
 
 provider "google" {
@@ -27,6 +27,9 @@ resource "google_cloudbuild_trigger" "deploy-cloud-run" {
       branch       = "^deploy$"
       invert_regex = false
     }
+  }
+  substitutions = {
+    _REGION = local.region
   }
   filename = "cloudbuild.yaml"
 }
