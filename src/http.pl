@@ -27,6 +27,24 @@ table_row([Row|Rest]) -->
     ]),
     table_row(Rest).
 
+previous_page(CurrentPage) -->
+    {
+        CurrentPage > 1,
+        PreviousPage is CurrentPage - 2
+    },
+    html([
+        a([href='/'+[offset=PreviousPage]], 'prev')
+    ]).
+
+next_page(CurrentPage, Pages) -->
+    {
+        CurrentPage < Pages
+    },
+    html([
+        a([href='/'+[offset=CurrentPage]], 'next')
+    ]).
+
+
 home_page(Request) :-
     http_parameters(Request, [
         offset(Offset, [optional(true), integer, default(0)])
@@ -45,10 +63,12 @@ home_page(Request) :-
             h1(PageTitle),
             p(['This page serves up facts about pokemon using ',
                 a([href='https://pokeapi.co'], 'PokeAPI'), '.']),
-            p(['There are ', Count+1, ' pokemon available.']),
+            p(['There are ', Count, ' pokemon available.']),
             div([
                 span([
-                    "page ", CurrentPage, " of ", Pages
+                    \previous_page(CurrentPage),
+                    " page ", CurrentPage, " of ", Pages, " ",
+                    \next_page(CurrentPage, Pages)
                 ]),
                 table([border(1), width('100%')], [
                     thead(tr([th(name)])),
