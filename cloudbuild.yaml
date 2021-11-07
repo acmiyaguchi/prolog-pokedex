@@ -17,3 +17,7 @@ steps:
       - "--platform"
       - "managed"
 images: ["gcr.io/$PROJECT_ID/prolog-pokedex"]
+# NOTE: this has been configured to use a separate service account, so we must
+# specify logging explicitly
+options:
+  logging: CLOUD_LOGGING_ONLY
