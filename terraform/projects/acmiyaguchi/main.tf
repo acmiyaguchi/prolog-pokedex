@@ -30,7 +30,7 @@ resource "google_cloudbuild_trigger" "deploy-cloud-run" {
     name  = "prolog-pokemon"
     owner = "acmiyaguchi"
     push {
-      branch       = "^deploy$"
+      branch       = "^main$"
       invert_regex = false
     }
   }
