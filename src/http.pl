@@ -61,8 +61,14 @@ home_page(Request) :-
         title(PageTitle),
         [
             h1(PageTitle),
-            p(['This page serves up facts about pokemon using ',
-                a([href='https://pokeapi.co'], 'PokeAPI'), '.']),
+            p([
+                'This page serves up facts about pokemon using ',
+                a([href='https://pokeapi.co'], 'PokeAPI'),
+                '. Find the source code on ',
+                a([href='https://github.com/acmiyaguchi/prolog-pokedex'],
+                    'Github at acmiyaguchi/prolog-pokedex'),
+                '.'
+            ]),
             p(['There are ', Count, ' pokemon available.']),
             div([
                 span([
