@@ -4,6 +4,7 @@
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_client)).
 :- use_module(library(http/http_parameters)).
+:- use_module(library(git)).
 
 debug_enabled :-
     (
@@ -99,6 +100,14 @@ home_page(Request) :-
         ]
     ).
 
+health(_Request) :-
+    git_hash(Hash, []),
+    reply_json_dict(_{
+        status: "ok",
+        git_hash: Hash
+    }).
+
 :- http_handler(root(.), home_page, []).
+:- http_handler(root(health), health, []).
 
 run(Port) :- http_server([port(Port)]).

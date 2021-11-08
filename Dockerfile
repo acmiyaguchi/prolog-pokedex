@@ -1,6 +1,6 @@
 FROM swipl:latest
 
-RUN apt-get update && apt-get -y install build-essential
+RUN apt-get update && apt-get -y install build-essential git
 
 WORKDIR /app
 COPY packages.pl .
