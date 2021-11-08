@@ -7,4 +7,5 @@ COPY packages.pl .
 RUN swipl packages.pl
 COPY . /app
 
-CMD ["swipl", "/app/start.pl"]
+RUN useradd -ms /bin/bash www
+CMD ["swipl", "/app/start.pl", "--user=www", "--no-fork"]

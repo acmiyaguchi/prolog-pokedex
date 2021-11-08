@@ -6,4 +6,7 @@ services:
       - "8080:8080"
     volumes:
       - ./:/app
-    command: swipl /app/start.pl
+    environment:
+      # debug for printing data and for hot reload
+      - DEBUG=true
+      - PORT=8080

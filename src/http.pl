@@ -1,19 +1,32 @@
-:- module(app, [run/2]).
+:- module(app, [run/1, debug_enabled/0]).
 
 % https://stackoverflow.com/questions/36966024/running-prolog-on-a-server-from-php-or-make-it-daemon
 :- use_module(library(http/http_server)).
 :- use_module(library(http/http_client)).
 :- use_module(library(http/http_parameters)).
-:- use_module(reload).
+
+debug_enabled :-
+    (
+        getenv('DEBUG', Value) ->
+            atom_string(Debug, Value),
+            must_be(boolean, Debug);
+            Debug = false
+    ),
+    Debug.
 
 list_pokemon(Data) :- list_pokemon(Data, 20, 0).
 list_pokemon(Data, Limit, Offset) :-
     % https://www.swi-prolog.org/pldoc/doc/_SWI_/library/http/http_client.pl
     BaseUrl = 'https://pokeapi.co/api/v2/',
     format(atom(Url), '~a/~a?limit=~d&offset=~d', [BaseUrl, 'pokemon', Limit, Offset]),
-    writeln(user_output, Url),
     http_get(Url, Data, [json_object(dict)]),
-    writeln(user_output, Data).
+
+    (
+        debug_enabled ->
+            writeln(user_output, Url),
+            writeln(user_output, Data);
+        true
+    ).
 
 % DCG rules?
 % https://stackoverflow.com/questions/24586960/dynamic-html-with-prolog
@@ -35,6 +48,7 @@ previous_page(CurrentPage) -->
     html([
         a([href='/'+[offset=PreviousPage]], 'prev')
     ]).
+previous_page(_) --> html([]).
 
 next_page(CurrentPage, Pages) -->
     {
@@ -43,6 +57,7 @@ next_page(CurrentPage, Pages) -->
     html([
         a([href='/'+[offset=CurrentPage]], 'next')
     ]).
+next_page(_) --> html([]).
 
 
 home_page(Request) :-
@@ -86,8 +101,4 @@ home_page(Request) :-
 
 :- http_handler(root(.), home_page, []).
 
-run(Port, Dir) :-
-    % first load then server on port 8080
-    http_server([port(Port)]),
-    % watch prolog files in the current directory for whether to restart the server
-    reload_source(Dir).
+run(Port) :- http_server([port(Port)]).
