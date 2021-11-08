@@ -108,6 +108,8 @@ health(_Request) :-
     }).
 
 :- http_handler(root(.), home_page, []).
+% home is no longer being handled...
+:- http_handler(root(home), http_redirect(moved, root(.)), []).
 :- http_handler(root(health), health, []).
 
 run(Port) :- http_server([port(Port)]).
